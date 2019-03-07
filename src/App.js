@@ -1,28 +1,41 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState,Fragment,useEffect} from 'react';
+import 'bulma'
+import Task from './Task'
+import TaskForm from './TaskForm'
 
-class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
-    );
+const App = () => {
+  const initialTasks = () => JSON.parse(localStorage.getItem('tasks')) || []
+  const [tasks,setTasks] = useState(initialTasks)
+  const [id,setId] = useState(initialTasks.length)
+  const addTask = task => {
+    const newTasks = [...tasks,task]
+    setTasks(newTasks)
   }
+  const deleteTask = (id) => {
+   const newTasks = tasks.filter(task => task.id !== id)
+   setTasks(newTasks)
+  }
+  useEffect (() => {
+
+    localStorage.setItem('tasks',JSON.stringify(tasks))
+    setId(tasks.length)
+    
+})
+
+
+  return (
+    <>
+    <section className="section">
+    <TaskForm addTask={addTask} id={id}/></section>
+    <section className="section">
+     <div className="columns is-multiline" data-testid="tasks-container">
+    {tasks.map(task => {
+      return <Task key={task.id} title={task.title} description={task.description} id={task.id} deleteTask={deleteTask} />
+    })}
+    </div></section>
+    </>
+   
+  )
 }
 
 export default App;
